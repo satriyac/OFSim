@@ -1,0 +1,136 @@
+/* Font Management */
+h1,h2,h3,h4,h5,h6,p,a,button,input {
+  font-family: 'Poppins', sans-serif;
+  font-weight: normal;
+  line-height: 1.5 !important;
+  margin: 0;
+  text-decoration: none !important;
+}
+span {
+  font-weight: bold;
+}
+textarea {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: small;
+  line-height: 1 !important;
+  margin: 0;
+  text-decoration: none;
+}
+/* End: Font Management */
+
+/* Color Management */
+:root {
+  --color-1: #004266;
+  --color-2: #ffd100;
+  --color-3: #000000;
+  --color-4: #fafafa;
+  --color-5: #2e2e2e;
+}
+/* End: Color Management */
+
+/* Button Utility */
+.button {
+  background-color: var(--color-3);
+  border-radius: 0.5rem;
+  color: var(--color-4);
+  padding: 0.25rem 0.5rem;
+}
+.button:hover {
+  background-color: var(--color-2);
+  color: var(--color-1);
+}
+/* End : Button Utility */
+
+/* Navbar */
+.navbar {
+  background-color: var(--color-3);
+  padding: 7px 0 !important;
+}
+.navbar a {
+  color: var(--color-4) !important;
+  letter-spacing: 0.1rem;
+}
+.navbar a:hover {
+  color: var(--color-2) !important;
+}
+/* End: Navbar */
+
+/* Hero Section */
+#hero {
+  padding: 100px 50px 100px 50px;
+  background-image: url(https://www.hoppecke.com//fileadmin/user_upload/energy-solutions-for-telecommunication.png);
+  background-color: rgba(0, 66, 102, 1); /* Adjust the alpha value (0.5) to control transparency */
+  background-blend-mode: multiply; /* Optional: Adjust blend mode for better transparency effect */
+  background-size: cover;
+  color: var(--color-4);
+}
+
+/* End: Hero Section */
+
+/* Experiment Available */
+#exper {
+  padding: 60px 50px 64px 50px;
+  background-color: var(--color-4);
+  color: var(--color-1) !important;
+}
+.exper-title a {
+  color: var(--color-1) !important;
+}
+.exper-title a:hover {
+  color: var(--color-3) !important;
+}
+.alert {
+  padding: 2px;
+  background-color:red;
+  border-radius: 10px;
+  width: 100%;
+  color: white;
+}
+.closebtn {
+  margin-left: 15px;
+  color: maroon;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.closebtn:hover {
+  color: white;
+}
+.paddingBetweenRows td {
+  padding: 0 15px;
+}
+/* End: Experiment Available */
+
+/* Footer */
+#footer {
+  background-color: var(--color-3);
+  color: var(--color-4);
+  letter-spacing: 0.1rem;
+  padding: 1rem 0;
+}
+/* End: Footer */
+
+/* Media Queries */
+@media (max-width: 991.98px) {
+  .jumbotron, #manuals, #experiments {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  #manuals .step-class {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  #nav-tabContent {
+    text-align: center;
+  }
+  #experiments .guide-col {
+    margin-top: 1rem;
+  }
+  #nav-tabContent h4 {
+    margin-top: 2rem;
+  }
+}
+/* End : Media Queries */

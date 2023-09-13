@@ -1,0 +1,19 @@
+{
+  "editor.fontSize": 12,
+  "window.zoomLevel": 0,
+  "terminal.integrated.fontSize": 12,
+  "editor.minimap.enabled": false,
+  "python.languageServer": "Pylance",
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintArgs": [
+    "--load-plugins",
+    "pylint_django",
+    "--django-settings-module=<mainapp>.settings"
+  ],
+  "git.autoRepositoryDetection": false,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "python.formatting.provider": "none"
+}

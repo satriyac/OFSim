@@ -1,0 +1,496 @@
+{% extends 'ofdmsim/index.html' %} {% load static %} {% block exper %}
+<div class="container text-center">
+  <!-- Experiment Title -->
+  <h1 class="display-6"><span>Percobaan </span>yang Tersedia</h1>
+  <p class="mt-3">
+    Berikut merupakan percobaan yang dapat disimulasikan secara langsung.
+  </p>
+  
+
+    <!-- OfdmTXRX Content -->
+    <div
+    class="tab-pane fade show active"
+    id="nav-ofdmt"
+    role="tabpanel"
+    aria-labelledby="nav-ofdmt-tab"
+  >
+
+      <!-- OfdmTXRX : Guidelines -->
+      <div class="row justify-content-center mt-5">
+        <h4><span>Topik: </span>OFDM Transmitter</h4>
+        {% for modul in ofdmt %}
+        <div class="mt-3 text-start">{{modul.Content|safe}}</div>
+        {% endfor %}
+      </div>
+      <div class="row justify-content-center mt-5">
+        <!-- OFDMTXRX : Block Diagram -->
+        <div class="col-lg-6">
+          <h4><span>Panduan: </span>OFDM Transmitter</h4>
+          <div class="mt-3 text-start"><p style="text-align: left;">Berikut kode yang dapat digunakan pada modul ini</p>
+            <p style="text-align: left;"> <br></p>
+            <pre>generate_data_input subcarrier=<strong>A</strong> qam modulation=<strong>B</strong> serial_to_parallel <br>ifft ifft_value=<strong>C</strong> cyclic_prefix add=<strong>D</strong> parallel_to_serial output </pre>
+            <p style="text-align: left;"> </p>
+            <p style="text-align: left;">Hal yang harus diperhatikan dalam menuliskan kode</p>
+            <ul>
+            <li style="text-align: left;"><strong>'A'</strong> harus diisi dengan nilai jumlah sample subcarrier</li>
+            <li style="text-align: left;"><strong>'B'</strong> harus diisi dengan nilai M-qam</li>
+            <li style="text-align: left;"><strong>'C'</strong> harus diisi dengan nilai ifft</li>
+            <li style="text-align: left;">Tidak ada baris dan kata yang diubah selain yang telah disebutkan pada poin di atas</li>
+            <li style="text-align: left;">ns=64 np=8 pv=3+3j bps=4 cp=16 snr=25 bit-generate tx-serial-parallel digital-modulation ifft tx-parallel-serial add-cp ofdm-channel awgn remove-cp rx-serial-parallel fft equalizer digital-demod rx-parallel-serial received-bits</li>
+            
+        </ul></div>
+
+
+        </div>
+
+        <!-- OFDMTXRX : Code Area -->
+        <div class="col-lg-6">
+          <h4><span>Code: </span>OFDM Transmitter</h4>
+          <form id="myForm">
+            {% csrf_token %}
+            <label for="input_text"></label><br />
+            <textarea
+              class="mt-3"
+              name="input_text"
+              id="input_text"
+              cols="60%"
+              rows="15"
+              placeholder="Tulis kode di sini"
+              required
+              oninput="handleInput()"
+            ></textarea>
+            <input
+              class="btn button mt-3"
+              type="button"
+              value="Show Result"
+              onclick="submitForm()"
+            />
+          </form>
+        </div>
+      </div>
+
+      <!-- OFDMTXRX DIAGRAM : Output Area -->
+      <div class="row justify-content-center mt-5">
+        <div id="outputContainer" style="padding-bottom: px;"></div>
+        <div id="imageContainer"></div>
+      </div>
+
+      <!-- OFDMTXRX PLOT: Output Area -->
+      <div class="row justify-content-center mt-5">
+        <div id="outputSection" style="display: none;">
+        <h4><span>Output: </span>Plot</h4>
+        <div class="row">
+          <div class="col-md-12">
+            <div id="subcarrierConfigContainer">
+              {% if subcarriers_img %}
+              <img src="{{ subcarriers_img }}" alt="Konfigurasi Subcarrier" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="bitGeneratorContainer">
+              {% if bit_generator_img %}
+              <img src="{{ bit_generator_img }}" alt="Output Bit Generator" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="constellationMapContainer">
+              {% if constellation_map_img %}
+              <img
+                src="{{ constellation_map_img }}"
+                alt="Konstelasi Modulasi Digital"
+              />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="ifftOutputContainer">
+              {% if ifft_output_img %}
+              <img src="{{ ifft_output_img }}" alt="Output Blok IFFT" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="channelResponseContainer">
+              {% if channel_response_img %}
+              <img src="{{ channel_response_img }}" alt="Channel Response" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="ofdmTxrxContainer">
+              {% if ofdm_txrx_img %}
+              <img src="{{ ofdm_txrx_img }}" alt="OFDM TXRX" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div id="channelEstimationContainer">
+              {% if channel_estimation_img %}
+              <img
+                src="{{ channel_estimation_img }}"
+                alt="Channel Estimation"
+              />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div id="receivedConstContainer">
+              {% if received_const_img %}
+              <img
+                src="{{ received_const_img }}"
+                alt="Received Constellation"
+              />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div id="equalizerConstContainer">
+              {% if equalizer_const_img %}
+              <img
+                src="{{ equalizer_const_img }}"
+                alt="Equalized Constellation Map via Hard Decision"
+              />
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-12-center">
+            <div id="receivedBitsContainer">
+              {% if received_bits_img %}
+              <img src="{{ received_bits_img }}" alt="Recovered Bits" />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <img src="" alt="" />
+    </div>
+
+    <script>
+      const allowedKeywords = [
+        //Coding
+        "subcarrier-config",
+        "ns",
+        "np",
+        "pv",
+        "bps",
+        "cp",
+        "snr",
+
+        //transmitter
+        "bit-generate",
+        "tx-serial-parallel",
+        "digital-modulation",
+        "ifft",
+        "tx-parallel-serial",
+        "add-cp",
+
+        //Channel
+        "ofdm-channel",
+        "awgn",
+
+        //Receiver
+        "remove-cp",
+        "rx-serial-parallel",
+        "fft",
+        "channel-estimation",
+        "equalizer",
+        "digital-demod",
+        "rx-parallel-serial",
+        "received-bits",
+      ];
+
+      const allowedKeywordsWithNumber = {
+        ns: "int",
+        np: "int",
+        pv: "complex",
+        bps: "int",
+        cp: "int",
+        snr: "int",
+      };
+
+      function submitForm() {
+        const form = document.getElementById("myForm");
+        const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0]
+          .value;
+        const inputText = document.getElementById("input_text").value;
+
+        // Validasi kata yang diperbolehkan
+        const inputKeywords = inputText.split(" ");
+        const invalidKeywords = [];
+        inputKeywords.forEach((keyword) => {
+          const keywordWithoutAssignment = keyword.split("=")[0];
+          if (!allowedKeywords.includes(keywordWithoutAssignment)) {
+            invalidKeywords.push(keyword);
+          }
+        });
+        if (invalidKeywords.length > 0) {
+          alert(
+            "Kata '" + invalidKeywords.join(", ") + "' tidak diperbolehkan."
+          );
+          return; // Hentikan pengiriman formulir jika kata tidak diperbolehkan
+        }
+
+        // Validasi kata dengan tipe data yang diizinkan
+        const invalidKeywordsWithNumber = [];
+        Object.entries(allowedKeywordsWithNumber).forEach(
+          ([keyword, dataType]) => {
+            const regex = new RegExp(keyword + "\\s*=\\s*([\\d\\.]+)", "i");
+            const match = inputText.match(regex);
+            if (match) {
+              const value = match[1];
+              if (dataType === "int" && !Number.isInteger(parseFloat(value))) {
+                invalidKeywordsWithNumber.push(keyword);
+              } else if (dataType === "float" && isNaN(parseFloat(value))) {
+                invalidKeywordsWithNumber.push(keyword);
+              }
+            } else if (inputKeywords.includes(keyword)) {
+              invalidKeywordsWithNumber.push(keyword);
+            }
+          }
+        );
+        if (invalidKeywordsWithNumber.length > 0) {
+          alert(
+            "Kata '" +
+              invalidKeywordsWithNumber.join(", ") +
+              "' harus diikuti oleh angka dengan tipe data yang sesuai."
+          );
+          return; // Hentikan pengiriman formulir jika kata tidak diperbolehkan
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "");
+        xhr.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded"
+        );
+        xhr.setRequestHeader("X-CSRFToken", csrfToken);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            displayImages(
+              response.subcarriers_img,
+              response.bit_generator_img,
+              response.constellation_map_img,
+              response.ifft_output_img,
+              response.channel_response_img,
+              response.ofdm_txrx_img,
+              response.channel_estimation_img,
+              response.received_const_img,
+              response.equalizer_const_img,
+              response.received_bits_img
+            );
+            displayOutputSection();
+          }
+        };
+        xhr.send("input_text=" + encodeURIComponent(inputText));
+      }
+
+      function displayOutputSection() {
+        const outputSection = document.getElementById('outputSection');
+        outputSection.style.display = 'block';
+      }
+
+      function displayImages(
+        subcarriersConfImg,
+        bitGeneratorImg,
+        constellationMapImg,
+        ifftOutputImg,
+        channelResponseImg,
+        ofdmTxrxImg,
+        channelEstImg,
+        receivedConstImg,
+        equalizerConstImg,
+        receivedBitsImg
+      ) {
+        const subcarrierConfigContainer = document.getElementById(
+          "subcarrierConfigContainer"
+        );
+        const bitGeneratorContainer = document.getElementById(
+          "bitGeneratorContainer"
+        );
+        const constellationMapContainer = document.getElementById(
+          "constellationMapContainer"
+        );
+        const ifftOutputContainer = document.getElementById(
+          "ifftOutputContainer"
+        );
+        const channelResponseContainer = document.getElementById(
+          "channelResponseContainer"
+        );
+        const ofdmTxrxContainer = document.getElementById("ofdmTxrxContainer");
+        const channelEstimationContainer = document.getElementById(
+          "channelEstimationContainer"
+        );
+        const receivedConstContainer = document.getElementById(
+          "receivedConstContainer"
+        );
+        const equalizerConstContainer = document.getElementById(
+          "equalizerConstContainer"
+        );
+        const receivedBitsContainer = document.getElementById(
+          "receivedBitsContainer"
+        );
+
+        subcarrierConfigContainer.innerHTML = "";
+        bitGeneratorContainer.innerHTML = "";
+        constellationMapContainer.innerHTML = "";
+        ifftOutputContainer.innerHTML = "";
+        channelResponseContainer.innerHTML = "";
+        ofdmTxrxContainer.innerHTML = "";
+        channelEstimationContainer.innerHTML = "";
+        receivedConstContainer.innerHTML = "";
+        equalizerConstContainer.innerHTML = "";
+        receivedBitsContainer.innerHTML = "";
+
+        if (subcarriersConfImg) {
+          const img = document.createElement("img");
+          img.src = subcarriersConfImg;
+          subcarrierConfigContainer.appendChild(img);
+        }
+
+        if (bitGeneratorImg) {
+          const img = document.createElement("img");
+          img.src = bitGeneratorImg;
+          bitGeneratorContainer.appendChild(img);
+        }
+
+        if (constellationMapImg) {
+          const img = document.createElement("img");
+          img.src = constellationMapImg;
+          constellationMapContainer.appendChild(img);
+        }
+
+        if (ifftOutputImg) {
+          const img = document.createElement("img");
+          img.src = ifftOutputImg;
+          ifftOutputContainer.appendChild(img);
+        }
+
+        if (channelResponseImg) {
+          const img = document.createElement("img");
+          img.src = channelResponseImg;
+          channelResponseContainer.appendChild(img);
+        }
+
+        if (ofdmTxrxImg) {
+          const img = document.createElement("img");
+          img.src = ofdmTxrxImg;
+          ofdmTxrxContainer.appendChild(img);
+        }
+
+        if (channelEstImg) {
+          const img = document.createElement("img");
+          img.src = channelEstImg;
+          channelEstimationContainer.appendChild(img);
+        }
+
+        if (receivedConstImg) {
+          const img = document.createElement("img");
+          img.src = receivedConstImg;
+          receivedConstContainer.appendChild(img);
+        }
+
+        if (equalizerConstImg) {
+          const img = document.createElement("img");
+          img.src = equalizerConstImg;
+          equalizerConstContainer.appendChild(img);
+        }
+
+        if (receivedBitsImg) {
+          const img = document.createElement("img");
+          img.src = receivedBitsImg;
+          receivedConstContainer.appendChild(img);
+        }
+      }
+
+      function handleInput() {
+        var text = document.getElementById("input_text").value;
+        var imageContainer = document.getElementById("imageContainer");
+        var infoMessage = document.getElementById("infoMessage");
+        const inputText = text.trim();
+        const outputContainer = document.getElementById("outputContainer");
+
+        if (inputText !== "") {
+          const outputText = document.createElement("h4");
+          const outputSpan = document.createElement("span");
+          outputSpan.textContent = "Output: ";
+          outputText.appendChild(outputSpan);
+          outputText.innerHTML += "Diagram";
+
+          outputContainer.innerHTML = "";
+          outputContainer.appendChild(outputText);
+        } else {
+          outputContainer.innerHTML = "";
+        }
+        
+
+        imageContainer.innerHTML = "";
+        var notFoundKeywords = [];
+
+        var keywords = text.split(/[= ]+/);
+        for (var i = 0; i < keywords.length; i++) {
+          var keyword = keywords[i];
+          if (keyword === "bit-generate") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/randombit.drawio.png' %}'>";
+          } else if (keyword === "tx-serial-parallel") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/txs2p.drawio.png' %}'>";
+          } else if (keyword === "digital-modulation") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/digitalmod.drawio.png' %}'>";
+          } else if (keyword === "ifft") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/ifft.drawio.png' %}'>";
+          } else if (keyword === "tx-parallel-serial") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/txp2s.drawio.png' %}'>";
+          } else if (keyword === "add-cp") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/addcp.drawio.png' %}'>";
+          } else if (keyword === "ofdm-channel") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/channel.drawio.png' %}'>";
+          } else if (keyword === "awgn") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/awgn.drawio.png' %}'>";
+          } else if (keyword === "remove-cp") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/removecp.drawio.png' %}'>";
+          } else if (keyword === "rx-serial-parallel") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/rxs2p.drawio.png' %}'>";
+          } else if (keyword === "fft") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/fft.drawio.png' %}'>";
+          } else if (keyword === "equalizer") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/equalizer.drawio.png' %}'>";
+          } else if (keyword === "digital-demod") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/demod.drawio.png' %}'>";
+          } else if (keyword === "rx-parallel-serial") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/rxp2s.drawio.png' %}'>";
+          } else if (keyword === "received-bits") {
+            imageContainer.innerHTML +=
+              "<img src='{% static 'images/revbits.drawio.png' %}'>";
+          } else {
+            notFoundKeywords.push(keyword);
+          }
+        }
+
+        if (notFoundKeywords.length > 0) {
+          infoMessage.textContent =
+            "Kata '" + notFoundKeywords.join(", ") + "' tidak ditemukan.";
+        } else {
+          infoMessage.textContent = "";
+        }
+      }
+    </script>
+    {% endblock exper %}
+  </div>
+</div>
