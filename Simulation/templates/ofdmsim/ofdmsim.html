@@ -17,7 +17,7 @@
 
       <!-- OfdmTXRX : Guidelines -->
       <div class="row justify-content-center mt-5">
-        <h4><span>Topik: </span>OFDM Transmitter</h4>
+        <h4><span>Topik: </span>OFDM Transceiver</h4>
         {% for modul in ofdmt %}
         <div class="mt-3 text-start">{{modul.Content|safe}}</div>
         {% endfor %}
@@ -25,18 +25,23 @@
       <div class="row justify-content-center mt-5">
         <!-- OFDMTXRX : Block Diagram -->
         <div class="col-lg-6">
-          <h4><span>Panduan: </span>OFDM Transmitter</h4>
+          <h4><span>Panduan: </span>OFDM Transceiver</h4>
           <div class="mt-3 text-start"><p style="text-align: left;">Berikut kode yang dapat digunakan pada modul ini</p>
             <p style="text-align: left;"> <br></p>
-            <pre>generate_data_input subcarrier=<strong>A</strong> qam modulation=<strong>B</strong> serial_to_parallel <br>ifft ifft_value=<strong>C</strong> cyclic_prefix add=<strong>D</strong> parallel_to_serial output </pre>
+            <!--<pre>generate_data_input subcarrier=<strong>A</strong> qam modulation=<strong>B</strong> serial_to_parallel <br>ifft ifft_value=<strong>C</strong> cyclic_prefix add=<strong>D</strong> parallel_to_serial output </pre> -->
+            <pre>ns=<strong>A</strong> np=<strong>B</strong> pv=<strong>C</strong> bps=<strong>D</strong> cp=<strong>E</strong> snr=<strong>F</strong> <br>bit-generate tx-serial-parallel digital-modulation ifft tx-parallel-serial add-cp <br>ofdm-channel awgn  remove-cp rx-serial-parallel fft equalizer digital-demod <br>rx-parallel-serial received-bits </pre>
             <p style="text-align: left;"> </p>
             <p style="text-align: left;">Hal yang harus diperhatikan dalam menuliskan kode</p>
             <ul>
             <li style="text-align: left;"><strong>'A'</strong> harus diisi dengan nilai jumlah sample subcarrier</li>
-            <li style="text-align: left;"><strong>'B'</strong> harus diisi dengan nilai M-qam</li>
-            <li style="text-align: left;"><strong>'C'</strong> harus diisi dengan nilai ifft</li>
+            <li style="text-align: left;"><strong>'B'</strong> harus diisi dengan nilai jumlah pilot</li>
+            <li style="text-align: left;"><strong>'C'</strong> harus diisi dengan nilai pilot value</li>
+            <li style="text-align: left;"><strong>'D'</strong> harus diisi dengan nilai jumlah bit per symbol</li>
+            <li style="text-align: left;"><strong>'E'</strong> harus diisi dengan nilai cyclic prefix</li>
+            <li style="text-align: left;"><strong>'F'</strong> harus diisi dengan nilai signal to noise</li>
             <li style="text-align: left;">Tidak ada baris dan kata yang diubah selain yang telah disebutkan pada poin di atas</li>
-            <li style="text-align: left;">ns=64 np=8 pv=3+3j bps=4 cp=16 snr=25 bit-generate tx-serial-parallel digital-modulation ifft tx-parallel-serial add-cp ofdm-channel awgn remove-cp rx-serial-parallel fft equalizer digital-demod rx-parallel-serial received-bits</li>
+            <!-- <li style="text-align: left;">ns=64 np=8 pv=3+3j bps=4 cp=16 snr=25 bit-generate tx-serial-parallel digital-modulation ifft tx-parallel-serial add-cp ofdm-channel awgn remove-cp rx-serial-parallel fft equalizer digital-demod rx-parallel-serial received-bits</li>-->
+           
             
         </ul></div>
 
@@ -45,7 +50,7 @@
 
         <!-- OFDMTXRX : Code Area -->
         <div class="col-lg-6">
-          <h4><span>Code: </span>OFDM Transmitter</h4>
+          <h4><span>Code: </span>OFDM Transceiver</h4>
           <form id="myForm">
             {% csrf_token %}
             <label for="input_text"></label><br />
