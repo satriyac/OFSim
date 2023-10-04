@@ -97,8 +97,8 @@ def ofdmTransceiver(request):
                     bits_paralel = m.serial_to_paralel(bits, dataCarriers, bits_per_symbol)
 
                 elif param.startswith('digital-modulation'):
-                    const_mapp, const_demapp  = m.Mapping(bits_paralel, bits_per_symbol)
-                    constellation_map_img_base64 = p.get_plot_constellation_map(const_mapp)
+                    const_mapp, const_demapp, mapping_table  = m.Mapping(bits_paralel, bits_per_symbol)
+                    constellation_map_img_base64 = p.get_plot_constellation_map(const_mapp, mapping_table,bits_per_symbol)
 
                 elif param.startswith('ifft'):
                     ofdm_data = m.OFDM_symbol(n_subcarriers, const_mapp, pilotCarriers, pilot_value, dataCarriers)

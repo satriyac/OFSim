@@ -21,7 +21,11 @@ def get_base64_encoded_image(image_path):
 def get_plot_bitgenerate(bits):
     plt.figure(figsize=(12,2))
     # Plot untuk Signal Generator
-    plt.step(np.arange(0, len(bits)), bits)
+    plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 2, where='post')
+    for tbit, bit in enumerate(bits):
+        plt.text(tbit + 0.5, 0.5, str(bit))
+    
+    #plt.ylim([-1,1.5])
     plt.title('Output Bit Generator')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')
@@ -61,7 +65,9 @@ def get_plot_channel_response(allCarriers,H_exact, n_subcarriers):
     plt.clf()
     return channel_response_img_base64
 
-def get_plot_constellation_map(const_mapp):
+def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
+
+    
     
     x1 = np.arange(-3.5, 3.5, 0.1)
     x2 = np.zeros_like(x1)
@@ -76,6 +82,38 @@ def get_plot_constellation_map(const_mapp):
     plt.scatter(symbol_r, symbol_i)  # 实部 虚部 画星座图 a array 从0到n-1
     plt.plot(x1, x2, color='red')
     plt.plot(y1, y2, color='red')
+
+    if bits_per_symbol ==1: 
+                for b0 in [0, 1]:
+                    B = (b0)
+                    Q = mapping_table[B]
+                    plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')  
+    
+    elif bits_per_symbol ==2:
+                for b1 in [0, 1]:
+                    for b0 in [0, 1]:
+                        B = (b1, b0)
+                        Q = mapping_table[B]
+                        plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')\
+    
+    elif bits_per_symbol ==3:
+            for b2 in [0, 1]:
+                for b1 in [0, 1]:
+                    for b0 in [0, 1]:
+                        B = (b3, b2, b1, b0)
+                        Q = mapping_table[B]
+                        plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
+    
+    elif bits_per_symbol ==4:
+        for b3 in [0, 1]:
+            for b2 in [0, 1]:
+                for b1 in [0, 1]:
+                    for b0 in [0, 1]:
+                        B = (b3, b2, b1, b0)
+                        Q = mapping_table[B]
+                        plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
+    
+
     plt.xlabel('real')
     plt.ylabel('imag')
     plt.title('Constelation Mapp')
@@ -157,7 +195,9 @@ def get_plot_equalizer_const(received_const, hard_decision):
 
 def get_plot_received_bits(bits_serial):
     plt.figure(figsize=(12,2))
-    plt.step(np.arange(0, len(bits_serial)), bits_serial)
+    plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 2, where='post')
+    for tbit, bit in enumerate(bits_serial):
+        plt.text(tbit + 0.5, 0.5, str(bit))
     plt.title('Received Bits')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')

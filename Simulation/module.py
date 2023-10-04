@@ -40,7 +40,7 @@ def inputData(data):
 """
 
 
-""" Modul Channel Coding """
+""" Modul Configurasi Subcarrier """
 # Fungsi konfigurasi subcarrier
 def subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol):
     allCarriers = np.arange(n_subcarriers)
@@ -112,7 +112,7 @@ def Mapping(bits, bits_per_symbol ):
         mapping_table = mapping_16qam
     constellation_mapp = np.array([mapping_table[tuple(b)] for b in bits])
     constellation_demapp = {v : k for k, v in mapping_table.items()}
-    return constellation_mapp, constellation_demapp
+    return constellation_mapp, constellation_demapp, mapping_table
 
 # OFDM Symbol generate
 def OFDM_symbol(n_subcarriers, QAM_payload, pilotCarriers, pilotValue, dataCarriers):
