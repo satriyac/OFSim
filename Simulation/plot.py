@@ -20,11 +20,12 @@ def get_base64_encoded_image(image_path):
 
 def get_plot_bitgenerate(bits):
     plt.figure(figsize=(12,2))
-    # Plot untuk Signal Generator
-    plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 2, where='post')
-    for tbit, bit in enumerate(bits):
-        plt.text(tbit + 0.5, 0.5, str(bit))
-    
+    # Plot untuk Signal Generator\
+    if len(bits)<=32:
+        plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 2, where='post')
+        for tbit, bit in enumerate(bits):
+            plt.text(tbit + 0.5, 0.5, str(bit))
+    else: plt.step(np.arange(0, len(bits)), bits,'r', where='post') 
     #plt.ylim([-1,1.5])
     plt.title('Output Bit Generator')
     plt.xlabel('Sample')
@@ -172,6 +173,8 @@ def get_plot_received_const(received_const):
     plt.figure(figsize=(6,6))
     plt.plot(received_const.real, received_const.imag, 'bo');
     plt.grid(True); 
+    plt.ylim([-4,4])
+    plt.xlim([-4,4])
     plt.xlabel('Real part'); 
     plt.ylabel('Imaginary Part'); 
     plt.title("Received constellation");\
@@ -187,6 +190,8 @@ def get_plot_equalizer_const(received_const, hard_decision):
         plt.plot([qam.real, hard.real], [qam.imag, hard.imag], 'b-o');
         plt.plot(hard_decision.real, hard_decision.imag, 'ro')
     plt.grid(True); plt.xlabel('Real part'); plt.ylabel('Imaginary part'); plt.title('Hard Decision demapping');
+    plt.ylim([-4,4])
+    plt.xlim([-4,4])
     equalizer_const_path = 'Simulation/static/files/equalizerconst.png'
     plt.savefig(equalizer_const_path)
     equalizer_const_img_base64 = get_base64_encoded_image(equalizer_const_path)
@@ -195,9 +200,11 @@ def get_plot_equalizer_const(received_const, hard_decision):
 
 def get_plot_received_bits(bits_serial):
     plt.figure(figsize=(12,2))
-    plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 2, where='post')
-    for tbit, bit in enumerate(bits_serial):
-        plt.text(tbit + 0.5, 0.5, str(bit))
+    if len(bits_serial)<=32:
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 2, where='post')
+        for tbit, bit in enumerate(bits_serial):
+            plt.text(tbit + 0.5, 0.5, str(bit))
+    else: plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', where='post') 
     plt.title('Received Bits')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')

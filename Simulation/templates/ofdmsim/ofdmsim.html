@@ -76,9 +76,20 @@
 
       <!-- OFDMTXRX DIAGRAM : Output Area -->
       <div class="row justify-content-center mt-5">
-        <div id="outputContainer" style="padding-bottom: px;"></div>
-        <div id="imageContainer"></div>
+        <div id="outputContainer1" style="padding-bottom: px;"></div>
+        <div id="imageContainer1"></div>
       </div>
+
+      <div class="row justify-content-center mt-5"> 
+        <div id="outputContainer2" style="padding-bottom: px;"></div>
+        <div id="imageContainer2"></div>
+      </div>
+
+      <div class="row justify-content-center mt-5">
+        <div id="outputContainer3" style="padding-bottom: px;"></div>
+        <div id="imageContainer3"></div>
+      </div>
+      
 
       <!-- OFDMTXRX PLOT: Output Area -->
       <div class="row justify-content-center mt-5">
@@ -413,75 +424,98 @@
 
       function handleInput() {
         var text = document.getElementById("input_text").value;
-        var imageContainer = document.getElementById("imageContainer");
+        var imageContainer1 = document.getElementById("imageContainer1");
+        var imageContainer2 = document.getElementById("imageContainer2");
+        var imageContainer3 = document.getElementById("imageContainer3");
         var infoMessage = document.getElementById("infoMessage");
         const inputText = text.trim();
-        const outputContainer = document.getElementById("outputContainer");
+        const outputContainer1 = document.getElementById("outputContainer1");
+        const outputContainer2 = document.getElementById("outputContainer2");
+        const outputContainer3 = document.getElementById("outputContainer3");
 
         if (inputText !== "") {
-          const outputText = document.createElement("h4");
-          const outputSpan = document.createElement("span");
-          outputSpan.textContent = "Output: ";
-          outputText.appendChild(outputSpan);
-          outputText.innerHTML += "Diagram";
+          const outputText1 = document.createElement("h4");
+          const outputSpan1 = document.createElement("span");
+          const outputText2 = document.createElement("h4");
+          const outputSpan2 = document.createElement("span");
+          const outputText3 = document.createElement("h4");
+          const outputSpan3 = document.createElement("span");
+          outputSpan1.textContent = "Output: ";
+          outputText1.appendChild(outputSpan1);
+          outputText1.innerHTML += "Diagram Transmitter";
+          outputContainer1.innerHTML = "";
+          outputContainer1.appendChild(outputText1);
 
-          outputContainer.innerHTML = "";
-          outputContainer.appendChild(outputText);
+          outputSpan2.textContent = "Output: ";
+          outputText2.appendChild(outputSpan2);
+          outputText2.innerHTML += "Diagram Kanal";
+          outputContainer2.innerHTML = "";
+          outputContainer2.appendChild(outputText2);
+
+          outputSpan3.textContent = "Output: ";
+          outputText3.appendChild(outputSpan3);
+          outputText3.innerHTML += "Diagram Receiver";
+          outputContainer3.innerHTML = "";
+          outputContainer3.appendChild(outputText3);
         } else {
-          outputContainer.innerHTML = "";
+          outputContainer1.innerHTML = "";
+          outputContainer2.innerHTML = "";
+          outputContainer3.innerHTML = "";
         }
         
 
-        imageContainer.innerHTML = "";
+        imageContainer1.innerHTML = "";
+        imageContainer2.innerHTML = "";
+        imageContainer3.innerHTML = "";
         var notFoundKeywords = [];
 
         var keywords = text.split(/[= ]+/);
         for (var i = 0; i < keywords.length; i++) {
           var keyword = keywords[i];
           if (keyword === "bit-generate") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/randombit.drawio.png' %}'>";
           } else if (keyword === "tx-serial-parallel") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/txs2p.drawio.png' %}'>";
           } else if (keyword === "digital-modulation") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/digitalmod.drawio.png' %}'>";
           } else if (keyword === "ifft") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/ifft.drawio.png' %}'>";
           } else if (keyword === "tx-parallel-serial") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/txp2s.drawio.png' %}'>";
           } else if (keyword === "add-cp") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/addcp.drawio.png' %}'>";
           } else if (keyword === "ofdm-channel") {
-            imageContainer.innerHTML +=
+            imageContainer2.innerHTML +=
               "<img src='{% static 'images/channel.drawio.png' %}'>";
           } else if (keyword === "awgn") {
-            imageContainer.innerHTML +=
+            imageContainer2.innerHTML +=
               "<img src='{% static 'images/awgn.drawio.png' %}'>";
           } else if (keyword === "remove-cp") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/removecp.drawio.png' %}'>";
           } else if (keyword === "rx-serial-parallel") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/rxs2p.drawio.png' %}'>";
           } else if (keyword === "fft") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/fft.drawio.png' %}'>";
           } else if (keyword === "equalizer") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/equalizer.drawio.png' %}'>";
           } else if (keyword === "digital-demod") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/demod.drawio.png' %}'>";
           } else if (keyword === "rx-parallel-serial") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/rxp2s.drawio.png' %}'>";
           } else if (keyword === "received-bits") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/revbits.drawio.png' %}'>";
           } else {
             notFoundKeywords.push(keyword);
