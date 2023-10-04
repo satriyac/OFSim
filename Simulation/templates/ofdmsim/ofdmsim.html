@@ -234,7 +234,8 @@
         const inputText = document.getElementById("input_text").value;
 
         // Validasi kata yang diperbolehkan
-        const inputKeywords = inputText.split(" ");
+        //const inputKeywords = inputText.split(" ");
+        const inputKeywords = inputText.split(/\s+/);
         const invalidKeywords = [];
         inputKeywords.forEach((keyword) => {
           const keywordWithoutAssignment = keyword.split("=")[0];
@@ -275,6 +276,8 @@
           );
           return; // Hentikan pengiriman formulir jika kata tidak diperbolehkan
         }
+
+        const inputTextCombined = inputKeywords.join(" ");
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "");
@@ -464,72 +467,66 @@
         }
         
 
-        imageContainer1.innerHTML = "";
-        imageContainer2.innerHTML = "";
-        imageContainer3.innerHTML = "";
+        imageContainer.innerHTML = "";
         var notFoundKeywords = [];
 
         var keywords = text.split(/[= ]+/);
         for (var i = 0; i < keywords.length; i++) {
           var keyword = keywords[i];
           if (keyword === "bit-generate") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/randombit.drawio.png' %}'>";
           } else if (keyword === "tx-serial-parallel") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/txs2p.drawio.png' %}'>";
           } else if (keyword === "digital-modulation") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/digitalmod.drawio.png' %}'>";
           } else if (keyword === "ifft") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/ifft.drawio.png' %}'>";
           } else if (keyword === "tx-parallel-serial") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/txp2s.drawio.png' %}'>";
           } else if (keyword === "add-cp") {
-            imageContainer1.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/addcp.drawio.png' %}'>";
           } else if (keyword === "ofdm-channel") {
-            imageContainer2.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/channel.drawio.png' %}'>";
           } else if (keyword === "awgn") {
-            imageContainer2.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/awgn.drawio.png' %}'>";
           } else if (keyword === "remove-cp") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/removecp.drawio.png' %}'>";
           } else if (keyword === "rx-serial-parallel") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/rxs2p.drawio.png' %}'>";
           } else if (keyword === "fft") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/fft.drawio.png' %}'>";
           } else if (keyword === "equalizer") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/equalizer.drawio.png' %}'>";
           } else if (keyword === "digital-demod") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/demod.drawio.png' %}'>";
           } else if (keyword === "rx-parallel-serial") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/rxp2s.drawio.png' %}'>";
           } else if (keyword === "received-bits") {
-            imageContainer3.innerHTML +=
+            imageContainer.innerHTML +=
               "<img src='{% static 'images/revbits.drawio.png' %}'>";
           } else {
             notFoundKeywords.push(keyword);
           }
-        }
-
-        if (notFoundKeywords.length > 0) {
-          infoMessage.textContent =
-            "Kata '" + notFoundKeywords.join(", ") + "' tidak ditemukan.";
-        } else {
-          infoMessage.textContent = "";
-        }
+        });
       }
+
     </script>
     {% endblock exper %}
   </div>
+
 </div>
+
