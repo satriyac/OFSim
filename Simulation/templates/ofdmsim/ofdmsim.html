@@ -467,56 +467,58 @@
         }
         
 
-        imageContainer.innerHTML = "";
+        imageContainer1.innerHTML = "";
+        imageContainer2.innerHTML = "";
+        imageContainer3.innerHTML = "";
         var notFoundKeywords = [];
 
         var keywords = text.split(/[= ]+/);
         for (var i = 0; i < keywords.length; i++) {
           var keyword = keywords[i];
           if (keyword === "bit-generate") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/randombit.drawio.png' %}'>";
           } else if (keyword === "tx-serial-parallel") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/txs2p.drawio.png' %}'>";
           } else if (keyword === "digital-modulation") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/digitalmod.drawio.png' %}'>";
           } else if (keyword === "ifft") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/ifft.drawio.png' %}'>";
           } else if (keyword === "tx-parallel-serial") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/txp2s.drawio.png' %}'>";
           } else if (keyword === "add-cp") {
-            imageContainer.innerHTML +=
+            imageContainer1.innerHTML +=
               "<img src='{% static 'images/addcp.drawio.png' %}'>";
           } else if (keyword === "ofdm-channel") {
-            imageContainer.innerHTML +=
+            imageContainer2.innerHTML +=
               "<img src='{% static 'images/channel.drawio.png' %}'>";
           } else if (keyword === "awgn") {
-            imageContainer.innerHTML +=
+            imageContainer2.innerHTML +=
               "<img src='{% static 'images/awgn.drawio.png' %}'>";
           } else if (keyword === "remove-cp") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/removecp.drawio.png' %}'>";
           } else if (keyword === "rx-serial-parallel") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/rxs2p.drawio.png' %}'>";
           } else if (keyword === "fft") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/fft.drawio.png' %}'>";
           } else if (keyword === "equalizer") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/equalizer.drawio.png' %}'>";
           } else if (keyword === "digital-demod") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/demod.drawio.png' %}'>";
           } else if (keyword === "rx-parallel-serial") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/rxp2s.drawio.png' %}'>";
           } else if (keyword === "received-bits") {
-            imageContainer.innerHTML +=
+            imageContainer3.innerHTML +=
               "<img src='{% static 'images/revbits.drawio.png' %}'>";
           } else {
             notFoundKeywords.push(keyword);
