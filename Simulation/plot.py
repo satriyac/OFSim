@@ -81,12 +81,12 @@ def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
     symbol_i = symbolIn.imag
     plt.figure(figsize=(6,6))
     plt.scatter(symbol_r, symbol_i)  # 实部 虚部 画星座图 a array 从0到n-1
-    plt.plot(x1, x2, color='red')
-    plt.plot(y1, y2, color='red')
+    #plt.plot(x1, x2, color='red')
+    #plt.plot(y1, y2, color='red')
 
     if bits_per_symbol ==1: 
                 for b0 in [0, 1]:
-                    B = (b0)
+                    B = (b0,)
                     Q = mapping_table[B]
                     plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')  
     
@@ -101,7 +101,7 @@ def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
             for b2 in [0, 1]:
                 for b1 in [0, 1]:
                     for b0 in [0, 1]:
-                        B = (b3, b2, b1, b0)
+                        B = (b3, b2, b1)
                         Q = mapping_table[B]
                         plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
     
@@ -173,8 +173,8 @@ def get_plot_received_const(received_const):
     plt.figure(figsize=(6,6))
     plt.plot(received_const.real, received_const.imag, 'bo');
     plt.grid(True); 
-    plt.ylim([-4,4])
-    plt.xlim([-4,4])
+    #plt.ylim([-4,4])
+    #plt.xlim([-4,4])
     plt.xlabel('Real part'); 
     plt.ylabel('Imaginary Part'); 
     plt.title("Received constellation");\
@@ -190,8 +190,8 @@ def get_plot_equalizer_const(received_const, hard_decision):
         plt.plot([qam.real, hard.real], [qam.imag, hard.imag], 'b-o');
         plt.plot(hard_decision.real, hard_decision.imag, 'ro')
     plt.grid(True); plt.xlabel('Real part'); plt.ylabel('Imaginary part'); plt.title('Hard Decision demapping');
-    plt.ylim([-4,4])
-    plt.xlim([-4,4])
+    #plt.ylim([-4,4])
+    #plt.xlim([-4,4])
     equalizer_const_path = 'Simulation/static/files/equalizerconst.png'
     plt.savefig(equalizer_const_path)
     equalizer_const_img_base64 = get_base64_encoded_image(equalizer_const_path)
