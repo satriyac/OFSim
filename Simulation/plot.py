@@ -81,8 +81,8 @@ def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
     symbol_i = symbolIn.imag
     plt.figure(figsize=(6,6))
     plt.scatter(symbol_r, symbol_i)  # 实部 虚部 画星座图 a array 从0到n-1
-    #plt.plot(x1, x2, color='red')
-    #plt.plot(y1, y2, color='red')
+    plt.plot(x1, x2, color='red')
+    plt.plot(y1, y2, color='red')
 
     if bits_per_symbol ==1: 
                 for b0 in [0, 1]:
@@ -101,7 +101,7 @@ def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
             for b2 in [0, 1]:
                 for b1 in [0, 1]:
                     for b0 in [0, 1]:
-                        B = (b3, b2, b1)
+                        B = (b2, b1, b0)
                         Q = mapping_table[B]
                         plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
     
@@ -198,13 +198,17 @@ def get_plot_equalizer_const(received_const, hard_decision):
     plt.clf()
     return equalizer_const_img_base64,
 
-def get_plot_received_bits(bits_serial):
+def get_plot_received_bits(bits_serial, bits):
     plt.figure(figsize=(12,2))
     if len(bits_serial)<=32:
-        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 2, where='post')
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1, where='post');
+        plt.vlines(np.arange(0, len(bits_serial)),abs(bits-bits_serial) ,'b', linewidth = 2,)
         for tbit, bit in enumerate(bits_serial):
             plt.text(tbit + 0.5, 0.5, str(bit))
-    else: plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', where='post') 
+    else: 
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', where='post') 
+        plt.vlines(np.arange(0, len(bits_serial)), abs(bits-bits_serial) ,'b', linewidth = 2,)
+        
     plt.title('Received Bits')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')

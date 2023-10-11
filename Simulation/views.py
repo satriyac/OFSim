@@ -73,71 +73,76 @@ def ofdmTransceiver(request):
             received_bits_img_base64 = None
           
             for param in input_text.split():
-                if param.startswith('ns='):
-                    n_subcarriers = int(param.split('=')[1])
-                elif param.startswith('np='):
-                    n_pilot = int(param.split('=')[1])
-                elif param.startswith('pv='):
-                    pilot_value = complex(param.split('=')[1])
-                elif param.startswith('bps='):
-                    bits_per_symbol = int(param.split('=')[1])
-                elif param.startswith('cp='):
-                    cycle_prefix = int(param.split('=')[1])
-                elif param.startswith('snr='):
-                    snr_db = int(param.split('=')[1])
+                try:
+                    error_message = ""
+                    
+                    if param.startswith('ns='):
+                        n_subcarriers = int(param.split('=')[1])
+                    elif param.startswith('np='):
+                        n_pilot = int(param.split('=')[1])
+                    elif param.startswith('pv='):
+                        pilot_value = complex(param.split('=')[1])
+                    elif param.startswith('bps='):
+                        bits_per_symbol = int(param.split('=')[1])
+                    elif param.startswith('cp='):
+                        cycle_prefix = int(param.split('=')[1])
+                    elif param.startswith('snr='):
+                        snr_db = int(param.split('=')[1])
 
-                #Fungsi menampilkan Plot   
-                elif param.startswith('bit-generate'):
-                    allCarriers,pilotCarriers, dataCarriers, payloadBits_per_OFDM = m.subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol)
-                    bits = m.bit_generator(payloadBits_per_OFDM)
-                    subcarriers_img_base64 = p.get_plot_subcarriers(pilotCarriers, dataCarriers, n_subcarriers)
-                    bit_generator_img_base64 = p.get_plot_bitgenerate(bits)
+                    #Fungsi menampilkan Plot   
+                    elif param.startswith('bit-generate'):
+                        allCarriers,pilotCarriers, dataCarriers, payloadBits_per_OFDM = m.subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol)
+                        bits = m.bit_generator(payloadBits_per_OFDM)
+                        subcarriers_img_base64 = p.get_plot_subcarriers(pilotCarriers, dataCarriers, n_subcarriers)
+                        bit_generator_img_base64 = p.get_plot_bitgenerate(bits)
 
-                elif param.startswith('tx-serial-parallel'):
-                    bits_paralel = m.serial_to_paralel(bits, dataCarriers, bits_per_symbol)
+                    elif param.startswith('tx-serial-parallel'):
+                        bits_paralel = m.serial_to_paralel(bits, dataCarriers, bits_per_symbol)
 
-                elif param.startswith('digital-modulation'):
-                    const_mapp, const_demapp, mapping_table  = m.Mapping(bits_paralel, bits_per_symbol)
-                    constellation_map_img_base64 = p.get_plot_constellation_map(const_mapp, mapping_table,bits_per_symbol)
+                    elif param.startswith('digital-modulation'):
+                        const_mapp, const_demapp, mapping_table  = m.Mapping(bits_paralel, bits_per_symbol)
+                        constellation_map_img_base64 = p.get_plot_constellation_map(const_mapp, mapping_table,bits_per_symbol)
 
-                elif param.startswith('ifft'):
-                    ofdm_data = m.OFDM_symbol(n_subcarriers, const_mapp, pilotCarriers, pilot_value, dataCarriers)
-                    ofdm_time = m.IDFT(ofdm_data)
-                    ifft_output_img_base64 = p.get_plot_ifft_output(ofdm_time)
+                    elif param.startswith('ifft'):
+                        ofdm_data = m.OFDM_symbol(n_subcarriers, const_mapp, pilotCarriers, pilot_value, dataCarriers)
+                        ofdm_time = m.IDFT(ofdm_data)
+                        ifft_output_img_base64 = p.get_plot_ifft_output(ofdm_time)
 
-                elif param.startswith('add-cp'):
-                    ofdm_tx = m.addCP(ofdm_time, cycle_prefix)
-                
-                elif param.startswith('ofdm-channel'):
-                    H_exact, ofdm_rx = m.channel(n_subcarriers, ofdm_tx, snr_db)
-                    channel_response_img_base64 =p.get_plot_channel_response(allCarriers,H_exact, n_subcarriers)
-                
-                elif param.startswith('awgn'):
-                    ofdm_txrx_img_base64 = p.get_plot_ofdm_txrx(ofdm_tx, ofdm_rx)
+                    elif param.startswith('add-cp'):
+                        ofdm_tx = m.addCP(ofdm_time, cycle_prefix)
+                    
+                    elif param.startswith('ofdm-channel'):
+                        H_exact, ofdm_rx = m.channel(n_subcarriers, ofdm_tx, snr_db)
+                        channel_response_img_base64 =p.get_plot_channel_response(allCarriers,H_exact, n_subcarriers)
+                    
+                    elif param.startswith('awgn'):
+                        ofdm_txrx_img_base64 = p.get_plot_ofdm_txrx(ofdm_tx, ofdm_rx)
 
-                elif param.startswith('remove-cp'):
-                    ofdm_rx_cpremove = m.removeCP(ofdm_rx, cycle_prefix, n_subcarriers)
-                
-                elif param.startswith('fft'):
-                    ofdm_freq = m.DFT(ofdm_rx_cpremove)
+                    elif param.startswith('remove-cp'):
+                        ofdm_rx_cpremove = m.removeCP(ofdm_rx, cycle_prefix, n_subcarriers)
+                    
+                    elif param.startswith('fft'):
+                        ofdm_freq = m.DFT(ofdm_rx_cpremove)
 
-                elif param.startswith('equalizer'):
-                    hest_at_pilots, hest = m.channelEstimate(ofdm_freq, pilotCarriers, pilot_value, allCarriers)
-                    channel_estimation_img_base64 = p.get_plot_channel_estimation(allCarriers, H_exact, pilotCarriers, hest_at_pilots, hest)
-                    equalized_hest = m.equalize(ofdm_freq, hest)
-                    receiced_const = m.get_payload(equalized_hest, dataCarriers)
-                    received_const_img_base64 = p.get_plot_received_const(receiced_const)
-                    bits_received, hard_decision = m.Demapping(receiced_const, const_demapp)
-                    equalizer_const_img_base64 = p.get_plot_equalizer_const(receiced_const, hard_decision)
-                
-                elif param.startswith('rx-parallel-serial'):
-                    bits_serial = m.PS(bits_received)
+                    elif param.startswith('equalizer'):
+                        hest_at_pilots, hest = m.channelEstimate(ofdm_freq, pilotCarriers, pilot_value, allCarriers)
+                        channel_estimation_img_base64 = p.get_plot_channel_estimation(allCarriers, H_exact, pilotCarriers, hest_at_pilots, hest)
+                        equalized_hest = m.equalize(ofdm_freq, hest)
+                        receiced_const = m.get_payload(equalized_hest, dataCarriers)
+                        received_const_img_base64 = p.get_plot_received_const(receiced_const)
+                        bits_received, hard_decision = m.Demapping(receiced_const, const_demapp)
+                        equalizer_const_img_base64 = p.get_plot_equalizer_const(receiced_const, hard_decision)
+                    
+                    elif param.startswith('rx-parallel-serial'):
+                        bits_serial = m.PS(bits_received)
 
-                
-                elif param.startswith('received-bits'):
-                    received_bits_img_base64 = p.get_plot_received_bits(bits_serial)
-
-                
+                    
+                    elif param.startswith('received-bits'):
+                        received_bits_img_base64 = p.get_plot_received_bits(bits_serial, bits)
+                    
+                except Exception as e:
+                    print(e)
+                    error_message = "Kode yang anda masukkan salah"
                 
             print (n_subcarriers, n_pilot,pilot_value,bits_per_symbol,cycle_prefix,snr_db)
             #OFDM Function
@@ -188,6 +193,7 @@ def ofdmTransceiver(request):
                 'received_const_img': received_const_img_base64,
                 'equalizer_const_img': equalizer_const_img_base64,
                 'received_bits_img': received_bits_img_base64,
+                'error_message_text': error_message
             }
 
             # Return the response as JSON

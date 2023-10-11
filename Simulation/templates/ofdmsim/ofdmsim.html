@@ -76,20 +76,9 @@
 
       <!-- OFDMTXRX DIAGRAM : Output Area -->
       <div class="row justify-content-center mt-5">
-        <div id="outputContainer1" style="padding-bottom: px;"></div>
-        <div id="imageContainer1"></div>
+        <div id="outputContainer" style="padding-bottom: px;"></div>
+        <div id="imageContainer"></div>
       </div>
-
-      <div class="row justify-content-center mt-5"> 
-        <div id="outputContainer2" style="padding-bottom: px;"></div>
-        <div id="imageContainer2"></div>
-      </div>
-
-      <div class="row justify-content-center mt-5">
-        <div id="outputContainer3" style="padding-bottom: px;"></div>
-        <div id="imageContainer3"></div>
-      </div>
-      
 
       <!-- OFDMTXRX PLOT: Output Area -->
       <div class="row justify-content-center mt-5">
@@ -299,7 +288,8 @@
               response.channel_estimation_img,
               response.received_const_img,
               response.equalizer_const_img,
-              response.received_bits_img
+              response.received_bits_img,
+              response.error_message_text
             );
             displayOutputSection();
           }
@@ -322,7 +312,8 @@
         channelEstImg,
         receivedConstImg,
         equalizerConstImg,
-        receivedBitsImg
+        receivedBitsImg,
+        errorMessageTxt
       ) {
         const subcarrierConfigContainer = document.getElementById(
           "subcarrierConfigContainer"
@@ -352,6 +343,7 @@
         const receivedBitsContainer = document.getElementById(
           "receivedBitsContainer"
         );
+        
 
         subcarrierConfigContainer.innerHTML = "";
         bitGeneratorContainer.innerHTML = "";
@@ -363,6 +355,7 @@
         receivedConstContainer.innerHTML = "";
         equalizerConstContainer.innerHTML = "";
         receivedBitsContainer.innerHTML = "";
+        
 
         if (subcarriersConfImg) {
           const img = document.createElement("img");
@@ -423,108 +416,100 @@
           img.src = receivedBitsImg;
           receivedConstContainer.appendChild(img);
         }
+
+        if (errorMessageTxt!=="") {
+          alert(
+            "Kode yang anda masukkan salah"
+          );
+        }
       }
 
       function handleInput() {
-        var text = document.getElementById("input_text").value;
-        var imageContainer1 = document.getElementById("imageContainer1");
-        var imageContainer2 = document.getElementById("imageContainer2");
-        var imageContainer3 = document.getElementById("imageContainer3");
-        var infoMessage = document.getElementById("infoMessage");
-        const inputText = text.trim();
-        const outputContainer1 = document.getElementById("outputContainer1");
-        const outputContainer2 = document.getElementById("outputContainer2");
-        const outputContainer3 = document.getElementById("outputContainer3");
+      var text = document.getElementById("input_text").value;
+      var imageContainer = document.getElementById("imageContainer");
+      const inputText = text.trim();
+      const outputContainer = document.getElementById("outputContainer");
 
-        if (inputText !== "") {
-          const outputText1 = document.createElement("h4");
-          const outputSpan1 = document.createElement("span");
-          const outputText2 = document.createElement("h4");
-          const outputSpan2 = document.createElement("span");
-          const outputText3 = document.createElement("h4");
-          const outputSpan3 = document.createElement("span");
-          outputSpan1.textContent = "Output: ";
-          outputText1.appendChild(outputSpan1);
-          outputText1.innerHTML += "Diagram Transmitter";
-          outputContainer1.innerHTML = "";
-          outputContainer1.appendChild(outputText1);
+      // Hapus konten sebelumnya
+      imageContainer.innerHTML = "";
+      outputContainer.innerHTML = "";
 
-          outputSpan2.textContent = "Output: ";
-          outputText2.appendChild(outputSpan2);
-          outputText2.innerHTML += "Diagram Kanal";
-          outputContainer2.innerHTML = "";
-          outputContainer2.appendChild(outputText2);
-
-          outputSpan3.textContent = "Output: ";
-          outputText3.appendChild(outputSpan3);
-          outputText3.innerHTML += "Diagram Receiver";
-          outputContainer3.innerHTML = "";
-          outputContainer3.appendChild(outputText3);
-        } else {
-          outputContainer1.innerHTML = "";
-          outputContainer2.innerHTML = "";
-          outputContainer3.innerHTML = "";
-        }
-        
-
-        imageContainer1.innerHTML = "";
-        imageContainer2.innerHTML = "";
-        imageContainer3.innerHTML = "";
-        var notFoundKeywords = [];
-
-        var keywords = text.split(/[= ]+/);
-        for (var i = 0; i < keywords.length; i++) {
-          var keyword = keywords[i];
-          if (keyword === "bit-generate") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/randombit.drawio.png' %}'>";
-          } else if (keyword === "tx-serial-parallel") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/txs2p.drawio.png' %}'>";
-          } else if (keyword === "digital-modulation") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/digitalmod.drawio.png' %}'>";
-          } else if (keyword === "ifft") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/ifft.drawio.png' %}'>";
-          } else if (keyword === "tx-parallel-serial") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/txp2s.drawio.png' %}'>";
-          } else if (keyword === "add-cp") {
-            imageContainer1.innerHTML +=
-              "<img src='{% static 'images/addcp.drawio.png' %}'>";
-          } else if (keyword === "ofdm-channel") {
-            imageContainer2.innerHTML +=
-              "<img src='{% static 'images/channel.drawio.png' %}'>";
-          } else if (keyword === "awgn") {
-            imageContainer2.innerHTML +=
-              "<img src='{% static 'images/awgn.drawio.png' %}'>";
-          } else if (keyword === "remove-cp") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/removecp.drawio.png' %}'>";
-          } else if (keyword === "rx-serial-parallel") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/rxs2p.drawio.png' %}'>";
-          } else if (keyword === "fft") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/fft.drawio.png' %}'>";
-          } else if (keyword === "equalizer") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/equalizer.drawio.png' %}'>";
-          } else if (keyword === "digital-demod") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/demod.drawio.png' %}'>";
-          } else if (keyword === "rx-parallel-serial") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/rxp2s.drawio.png' %}'>";
-          } else if (keyword === "received-bits") {
-            imageContainer3.innerHTML +=
-              "<img src='{% static 'images/revbits.drawio.png' %}'>";
-          } else {
-            notFoundKeywords.push(keyword);
-          }
-        };
+      if (inputText !== "") {
+        const outputText = document.createElement("h4");
+        const outputSpan = document.createElement("span");
+        outputSpan.textContent = "Output: ";
+        outputText.appendChild(outputSpan);
+        outputText.innerHTML += "Diagram";
+        outputContainer.appendChild(outputText);
       }
+
+      const keywordGroups = [[], [], []];
+
+      const titles = ["Transmitter", "Channel", "Receiver"]; // Judul-judul baru
+
+      // Split kata kunci
+      const keywords = text.split(/\s+/);
+
+      keywords.forEach(keyword => {
+        const keywordMap = {
+          "bit-generate": "randombit_drawio",
+          "tx-serial-parallel": "txs2p_drawio",
+          "digital-modulation": "digitalmod_drawio",
+          "ifft": "ifft_drawio",
+          "tx-parallel-serial": "txp2s_drawio",
+          "add-cp": "addcp_drawio",
+          "ofdm-channel": "channel_drawio",
+          "awgn": "awgn_drawio",
+          "remove-cp": "removecp_drawio",
+          "rx-serial-parallel": "rxs2p_drawio",
+          "fft": "fft_drawio",
+          "equalizer": "equalizer_drawio",
+          "digital-demod": "demod_drawio",
+          "rx-parallel-serial": "rxp2s_drawio",
+          "received-bits": "revbits_drawio"
+        };
+
+        if (keyword in keywordMap) {
+          const imageName = keywordMap[keyword];
+          keywordGroups.forEach((group, index) => {
+            if (index === 0 && (imageName === "randombit_drawio" || imageName === "txs2p_drawio" || imageName === "digitalmod_drawio" || imageName === "ifft_drawio" || imageName === "txp2s_drawio" || imageName === "addcp_drawio" || imageName === "channel_drawio")) {
+              group.push(imageName);
+            } else if (index === 1 && (imageName === "channel_drawio" || imageName === "awgn_drawio" || imageName === "removecp_drawio")) {
+              group.push(imageName);
+            } else if (index === 2 && (imageName === "removecp_drawio" || imageName === "rxs2p_drawio" || imageName === "fft_drawio" || imageName === "equalizer_drawio" || imageName === "demod_drawio" || imageName === "rxp2s_drawio" || imageName === "revbits_drawio")) {
+              group.push(imageName);
+            }
+          });
+        }
+      });
+
+      // Tampilkan gambar-gambar ke dalam imageContainer dengan baris yang berbeda
+      keywordGroups.forEach((group, groupIndex) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'image-row'; // Tambahkan kelas CSS untuk baris
+
+        group.forEach(imageName => {
+          const img = document.createElement('img');
+          img.src = 'Simulation/static/images/' + imageName + '.png';
+
+          // Tambahkan margin pada gambar
+          img.style.marginTop = '20px';
+          img.style.marginBottom = '30px';
+
+          rowDiv.appendChild(img);
+        });
+
+        // Tampilkan judul berdasarkan indeks grup
+        const title = document.createElement("h4");
+        title.innerText = titles[groupIndex]; // Menggunakan judul baru berdasarkan indeks grup
+        title.style.textAlign = "center";
+        rowDiv.insertBefore(title, rowDiv.firstChild);
+
+        imageContainer.appendChild(rowDiv);
+      });
+    }
+
+
 
     </script>
     {% endblock exper %}
