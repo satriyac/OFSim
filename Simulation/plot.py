@@ -70,10 +70,10 @@ def get_plot_constellation_map(const_mapp, mapping_table, bits_per_symbol):
 
     
     
-    x1 = np.arange(-3.5, 3.5, 0.1)
+    x1 = np.arange(-4.5, 4.5, 0.1)
     x2 = np.zeros_like(x1)
 
-    y2 = np.arange(-3.5, 3.5, 0.1)
+    y2 = np.arange(-4.5, 4.5, 0.1)
     y1 = np.zeros_like(y2)
 
     symbolIn = np.array(const_mapp)
@@ -202,12 +202,12 @@ def get_plot_received_bits(bits_serial, bits):
     plt.figure(figsize=(12,2))
     if len(bits_serial)<=32:
         plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1, where='post');
-        plt.vlines(np.arange(0, len(bits_serial)),abs(bits-bits_serial) ,'b', linewidth = 2,)
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ),abs(bits-bits_serial) ,'b', linewidth = 4,)
         for tbit, bit in enumerate(bits_serial):
             plt.text(tbit + 0.5, 0.5, str(bit))
     else: 
         plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', where='post') 
-        plt.vlines(np.arange(0, len(bits_serial)), abs(bits-bits_serial) ,'b', linewidth = 2,)
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ), abs(bits-bits_serial) ,'b', linewidth = 2,)
         
     plt.title('Received Bits')
     plt.xlabel('Sample')
