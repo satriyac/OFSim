@@ -201,13 +201,13 @@ def get_plot_equalizer_const(received_const, hard_decision):
 def get_plot_received_bits(bits_serial, bits):
     plt.figure(figsize=(12,2))
     if len(bits_serial)<=32:
-        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1, where='post');
-        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ),abs(bits-bits_serial) ,'b', linewidth = 4,)
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1,zorder =1, where='post');
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ),abs(bits-bits_serial) ,'b', linewidth = 4, zorder=2)
         for tbit, bit in enumerate(bits_serial):
             plt.text(tbit + 0.5, 0.5, str(bit))
     else: 
-        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', where='post') 
-        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ), abs(bits-bits_serial) ,'b', linewidth = 2,)
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', zorder = 1, where='post') 
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ), abs(bits-bits_serial) ,'b', linewidth = 2, zorder=2)
         
     plt.title('Received Bits')
     plt.xlabel('Sample')
