@@ -18,15 +18,17 @@ def get_base64_encoded_image(image_path):
         return f"data:image/png;base64,{encoded_string}"
 
 
-def get_plot_bitgenerate(bits):
+def get_plot_bitgenerate(bits,bps):
     plt.figure(figsize=(12,2))
     # Plot untuk Signal Generator\
     if len(bits)<=32:
-        plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 2, where='post')
+        plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 1, where='post')
+        plt.vlines(np.arange(0, len(bits),bps),ymin=0.0, ymax=1.0, color ='k', linewidth = 1, linestyle="--", zorder=3, label ='bits per symbol mark')
         for tbit, bit in enumerate(bits):
             plt.text(tbit + 0.5, 0.5, str(bit))
     else: plt.step(np.arange(0, len(bits)), bits,'r', where='post') 
     #plt.ylim([-1,1.5])
+    plt.legend(fontsize=10)
     plt.title('Output Bit Generator')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')
@@ -184,12 +186,30 @@ def get_plot_received_const(received_const):
     plt.clf()
     return received_const_img_base64
 
-def get_plot_equalizer_const(received_const, hard_decision):
+def get_plot_equalizer_const(received_const, hard_decision, const_demapp,const_mapp):
     plt.figure(figsize=(6,6))
-    for qam, hard in zip(received_const, hard_decision):
+    y=[const_demapp[C] for C in hard_decision]
+    t=[const_demapp[C] for C in const_mapp]
+    i =0
+    x1 = np.arange(-4.5, 4.5, 0.1)
+    x2 = np.zeros_like(x1)
+
+    y2 = np.arange(-4.5, 4.5, 0.1)
+    y1 = np.zeros_like(y2)
+    for qam, hard,y,const,t in zip(received_const, hard_decision,y,const_mapp,t):
         plt.plot([qam.real, hard.real], [qam.imag, hard.imag], 'b-o');
-        plt.plot(hard_decision.real, hard_decision.imag, 'ro')
+        plt.plot(hard_decision.real, hard_decision.imag, 'ro', label ='Restored Constellation via Hard Decision'if i == 0 else "");
+        plt.scatter(const.real, const.imag,s=100, marker='x',color ='g', linewidth=2, label = 'Transmitted Constelation'if i == 0 else "");
+        plt.text(const.real, const.imag+0.2,str(t).replace(',','').replace('(','').replace(')',''), ha='center');
+        plt.text(hard.real, hard.imag+0.2, str(y).replace(',','').replace('(','').replace(')',''), ha='center')
+        i = i+1
+    plt.plot(x1, x2, color='red')
+    plt.plot(y1, y2, color='red')
+    plt.legend(scatterpoints=1)
+    
     plt.grid(True); plt.xlabel('Real part'); plt.ylabel('Imaginary part'); plt.title('Hard Decision demapping');
+
+
     #plt.ylim([-4,4])
     #plt.xlim([-4,4])
     equalizer_const_path = 'Simulation/static/files/equalizerconst.png'
@@ -198,20 +218,39 @@ def get_plot_equalizer_const(received_const, hard_decision):
     plt.clf()
     return equalizer_const_img_base64,
 
-def get_plot_received_bits(bits_serial, bits):
-    plt.figure(figsize=(12,2))
+def get_plot_received_bits(bits_serial, bits, bps):
+    plt.figure(figsize=(12,5))
+    plt.subplot(2,1,1)
+    if len(bits)<=32:
+        plt.step(np.arange(0, len(bits)), bits,'r', linewidth = 1, where='post', label = 'Transmited Bits')
+        plt.vlines(np.arange(0, len(bits),bps),ymin=0.0, ymax=1.0, color ='k', linewidth = 1, linestyle="--", zorder=3, label ='bits per symbol mark')
+        for tbit, bit in enumerate(bits):
+            plt.text(tbit + 0.5, 0.5, str(bit))
+    else: plt.step(np.arange(0, len(bits)), bits,'r', where='post') 
+    #plt.ylim([-1,1.5])
+    plt.legend(fontsize=10)
+    plt.title('Transmited Bits')
+    plt.xlabel('Sample')
+    plt.ylabel('Amplitude')
+    plt.tight_layout(pad=15)
+
+    plt.subplot(2,1,2)
     if len(bits_serial)<=32:
-        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1,zorder =1, where='post');
-        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ),abs(bits-bits_serial) ,'b', linewidth = 4, zorder=2)
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', linewidth = 1,zorder =1, where='post', label = 'Restored bits serial');
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ),abs(bits-bits_serial) ,'b', linewidth = 4, zorder=2 , label= 'bit errors')
+        plt.vlines(np.arange(0, len(bits_serial),bps),ymin=0.0, ymax=1.0, color ='k', linewidth = 1, linestyle="--", zorder=3, label ='bits per symbol mark')
+       
         for tbit, bit in enumerate(bits_serial):
             plt.text(tbit + 0.5, 0.5, str(bit))
     else: 
-        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', zorder = 1, where='post') 
-        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ), abs(bits-bits_serial) ,'b', linewidth = 2, zorder=2)
-        
+        plt.step(np.arange(0, len(bits_serial)), bits_serial,'r', zorder = 1, where='post', label = 'Restored bits serial') 
+        plt.vlines((np.arange(0, len(bits_serial)) + 0.5 ), abs(bits-bits_serial) ,'b', linewidth = 2, zorder=2, label= 'bit errors')
+       
+    plt.legend(fontsize=10)
     plt.title('Received Bits')
     plt.xlabel('Sample')
     plt.ylabel('Amplitude')
+    plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=1)
     received_bits_path = 'Simulation/static/files/receivedbits.png'
     plt.savefig(received_bits_path)
     received_bits_img_base64 = get_base64_encoded_image(received_bits_path)

@@ -94,7 +94,7 @@ def ofdmTransceiver(request):
                         allCarriers,pilotCarriers, dataCarriers, payloadBits_per_OFDM = m.subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol)
                         bits = m.bit_generator(payloadBits_per_OFDM)
                         subcarriers_img_base64 = p.get_plot_subcarriers(pilotCarriers, dataCarriers, n_subcarriers)
-                        bit_generator_img_base64 = p.get_plot_bitgenerate(bits)
+                        bit_generator_img_base64 = p.get_plot_bitgenerate(bits, bits_per_symbol)
 
                     elif param.startswith('tx-serial-parallel'):
                         bits_paralel = m.serial_to_paralel(bits, dataCarriers, bits_per_symbol)
@@ -131,14 +131,14 @@ def ofdmTransceiver(request):
                         receiced_const = m.get_payload(equalized_hest, dataCarriers)
                         received_const_img_base64 = p.get_plot_received_const(receiced_const)
                         bits_received, hard_decision = m.Demapping(receiced_const, const_demapp)
-                        equalizer_const_img_base64 = p.get_plot_equalizer_const(receiced_const, hard_decision)
+                        equalizer_const_img_base64 = p.get_plot_equalizer_const(receiced_const, hard_decision, const_demapp,const_mapp)
                     
                     elif param.startswith('rx-parallel-serial'):
                         bits_serial = m.PS(bits_received)
 
                     
                     elif param.startswith('received-bits'):
-                        received_bits_img_base64 = p.get_plot_received_bits(bits_serial, bits)
+                        received_bits_img_base64 = p.get_plot_received_bits(bits_serial, bits, bits_per_symbol)
                     
                 except Exception as e:
                     print(e)
