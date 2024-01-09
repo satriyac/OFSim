@@ -1,0 +1,1 @@
+web gunicorn ofsim.wsgi:application --log-file -

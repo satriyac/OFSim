@@ -1,217 +1,188 @@
 import numpy as np
 import scipy.interpolate
-import matplotlib.pyplot as plt
-import scipy.signal as sg
-import scipy.fftpack as fr
-import cmath as c
-import Simulation.plot as p
-
-
-""" Error Handling dari Input User 
-# Fungsi untuk cek data parameter
-
-def inputData(data):
-    # Dictionary dari kata untuk input kode
-
-    dictOFDM = ['bits-per-symbol', 'cycle-prefix', 'n-pilot', 'n-subcarriers', 'ofdm-transceiver', 'pilot-value', 'snr-db']
-    # Error handling modul Signal Generator
-    # signal-generator amplitude 1 frequency 1000 freq-sampling 100
-    # show signal
-   
-    
-    if data[0] == 'ofdm-transceiver':
-        n_subcarriers       = int(data[2])
-        n_pilot             = int(data[4])
-        pilot_value         = complex(data[6])
-        bits_per_symbol     = int(data[8])
-        cycle_prefix        = int(data[10])
-        snr_db              = int(data[12])
-
-        show                = ofdm_transceiver(n_subcarriers, n_pilot, pilot_value,  bits_per_symbol, cycle_prefix, snr_db)
-        remove              = [data[2], data[4], data[6], data[8], data[10], data[12]]
-        final_list          = list(set(data) - set(remove))
-        final_list.sort()
-        
-        cek_kata            = (final_list == dictOFDM)
-        cek = print(final_list)
-        dic = print(dictOFDM)      
-   
-    return cek_kata, show
-"""
-
 
 """ Modul Configurasi Subcarrier """
 # Fungsi konfigurasi subcarrier
-def subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol):
-    allCarriers = np.arange(n_subcarriers)
-    pilotCarriers = allCarriers[::n_subcarriers//n_pilot]
-    pilotCarriers = np.hstack([pilotCarriers, np.array([allCarriers[-1]])])
-    n_pilot = n_pilot + 1
-    dataCarriers = np.delete(allCarriers, pilotCarriers)
-    payloadBits_per_OFDM = len(dataCarriers)*bits_per_symbol
-    return allCarriers, pilotCarriers, dataCarriers, payloadBits_per_OFDM
+
+
+def konfigurasi_subpembawa(n_subpembawa, n_pilot, bit_tiap_simbol):
+    pembawa = np.arange(n_subpembawa)
+    subpembawa_pilot = pembawa[::n_subpembawa//n_pilot]
+    subpembawa_pilot = np.hstack([subpembawa_pilot, np.array([pembawa[-1]])])
+    subpembawa_data = np.delete(pembawa, subpembawa_pilot)
+    panjang_bit = len(subpembawa_data)*bit_tiap_simbol
+    return pembawa, subpembawa_pilot, subpembawa_data, panjang_bit
 
 
 """ Modul Transmitter """
-# Fungsi pembangkitan bit sejumlah payload
-def bit_generator(payloadBits_per_OFDM):
-    bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
-    return bits
+# Blok pembangkitan data bit sejumlah panjangBit
 
-def serial_to_paralel(bits, dataCarriers, bits_per_symbol ):
-    return bits.reshape((len(dataCarriers), bits_per_symbol))
 
-# Frequency Domain
-def Mapping(bits, bits_per_symbol ):
-    
-    mapping_bpsk = {
-    (0,) : -4.24264+0.0j,
-    (1,) :  4.24264+0.0j,
-}
-    mapping_qpsk = {
-    (0,0) : -3-3j,
-    (1,0) :  3-3j,
-    (0,1) : -3+3j,
-    (1,1) :  3+3j
-}
-    mapping_8qam = {
-    (0,0,0) : (-3+1j)*(4.2426/3.1623),
-    (1,0,0) : (-3-1j)*(4.2426/3.1623),
-    (0,1,0) : (-1+1j)*(4.2426/3.1623),
-    (1,1,0) : (-1-1j)*(4.2426/3.1623),
-    (0,0,1) : ( 3+1j)*(4.2426/3.1623),
-    (1,0,1) : ( 3-1j)*(4.2426/3.1623),
-    (0,1,1) : ( 1+1j)*(4.2426/3.1623),
-    (1,1,1) : ( 1-1j)*(4.2426/3.1623)
-}
-    mapping_16qam = {
-    (0,0,0,0) : -3-3j,
-    (0,0,0,1) : -3-1j,
-    (0,0,1,0) : -3+3j,
-    (0,0,1,1) : -3+1j,
-    (0,1,0,0) : -1-3j,
-    (0,1,0,1) : -1-1j,
-    (0,1,1,0) : -1+3j,
-    (0,1,1,1) : -1+1j,
-    (1,0,0,0) :  3-3j,
-    (1,0,0,1) :  3-1j,
-    (1,0,1,0) :  3+3j,
-    (1,0,1,1) :  3+1j,
-    (1,1,0,0) :  1-3j,
-    (1,1,0,1) :  1-1j,
-    (1,1,1,0) :  1+3j,
-    (1,1,1,1) :  1+1j
-}
-    if bits_per_symbol == 1:
-        mapping_table = mapping_bpsk
-    elif bits_per_symbol == 2:
-        mapping_table = mapping_qpsk
-    elif bits_per_symbol == 3:
-        mapping_table = mapping_8qam
-    elif bits_per_symbol == 4:
-        mapping_table = mapping_16qam
-    constellation_mapp = np.array([mapping_table[tuple(b)] for b in bits])
-    constellation_demapp = {v : k for k, v in mapping_table.items()}
-    return constellation_mapp, constellation_demapp, mapping_table
+def pembangkit_bit(panjangBit):
+    bit_serial = np.random.binomial(n=1, p=0.5, size=(panjangBit, ))
+    return bit_serial
 
-# OFDM Symbol generate
-def OFDM_symbol(n_subcarriers, QAM_payload, pilotCarriers, pilotValue, dataCarriers):
-    symbol = np.zeros(n_subcarriers, dtype=complex) # the overall K subcarriers
-    symbol[pilotCarriers] = pilotValue  # allocate the pilot subcarriers 
-    symbol[dataCarriers] = QAM_payload  # allocate the pilot subcarriers
-    return symbol
+# Blok serial ke paralel
 
-#IDFT untuk mengubah ke ranah waktu
-def IDFT(OFDM_data):
-    return np.fft.ifft(OFDM_data)
 
-#Penambahan cycle prefix
-def addCP(OFDM_time, CP):
-    cp = OFDM_time[-CP:]               # take the last CP samples ...
-    return np.hstack([cp, OFDM_time])  # ... and add them to the beginning
+def serial_ke_paralel(bit_serial, subpembawa_data, bit_tiap_simbol):
+    bit_paralel = bit_serial.reshape((len(subpembawa_data), bit_tiap_simbol))
+    return bit_paralel
+
+# Blok pemeta konstelasi
+
+
+def pemeta(bits, bit_tiap_simbol):
+
+    pemeta_bpsk = {
+        (0,): -4.24264+0.0j,
+        (1,):  4.24264+0.0j,
+    }
+    pemeta_qpsk = {
+        (0, 0): -3-3j,
+        (1, 0):  3-3j,
+        (0, 1): -3+3j,
+        (1, 1):  3+3j
+    }
+    pemeta_8qam = {
+        (0, 0, 0): (-3+1j)*(4.2426/3.1623),
+        (1, 0, 0): (-3-1j)*(4.2426/3.1623),
+        (0, 1, 0): (-1+1j)*(4.2426/3.1623),
+        (1, 1, 0): (-1-1j)*(4.2426/3.1623),
+        (0, 0, 1): (3+1j)*(4.2426/3.1623),
+        (1, 0, 1): (3-1j)*(4.2426/3.1623),
+        (0, 1, 1): (1+1j)*(4.2426/3.1623),
+        (1, 1, 1): (1-1j)*(4.2426/3.1623)
+    }
+    pemeta_16qam = {
+        (0, 0, 0, 0): -3-3j,
+        (0, 0, 0, 1): -3-1j,
+        (0, 0, 1, 0): -3+3j,
+        (0, 0, 1, 1): -3+1j,
+        (0, 1, 0, 0): -1-3j,
+        (0, 1, 0, 1): -1-1j,
+        (0, 1, 1, 0): -1+3j,
+        (0, 1, 1, 1): -1+1j,
+        (1, 0, 0, 0):  3-3j,
+        (1, 0, 0, 1):  3-1j,
+        (1, 0, 1, 0):  3+3j,
+        (1, 0, 1, 1):  3+1j,
+        (1, 1, 0, 0):  1-3j,
+        (1, 1, 0, 1):  1-1j,
+        (1, 1, 1, 0):  1+3j,
+        (1, 1, 1, 1):  1+1j
+    }
+    if bit_tiap_simbol == 1:
+        tabel_pemeta = pemeta_bpsk
+    elif bit_tiap_simbol == 2:
+        tabel_pemeta = pemeta_qpsk
+    elif bit_tiap_simbol == 3:
+        tabel_pemeta = pemeta_8qam
+    elif bit_tiap_simbol == 4:
+        tabel_pemeta = pemeta_16qam
+    peta_konstelasi = np.array([tabel_pemeta[tuple(b)] for b in bits])
+    tabel_pengawapeta = {v: k for k, v in tabel_pemeta.items()}
+    return peta_konstelasi, tabel_pengawapeta, tabel_pemeta
+
+# Pembentukan simbol OFDM dengan mengalokasikan data pada subpembawa data, dan pilot pada subpembawa pilot
+
+
+def simbol_ofdm(n_subpembawa, peta_konstelasi, subpembawa_pilot, nilai_pilot, subpembawa_data):
+    simbol_dom_frek = np.zeros(n_subpembawa, dtype=complex)
+    simbol_dom_frek[subpembawa_pilot] = nilai_pilot
+    simbol_dom_frek[subpembawa_data] = peta_konstelasi
+    return simbol_dom_frek
+
+# Blok IDFT untuk mengubah ke ranah waktu
+
+
+def idft(simbol_dom_frek):
+    simbol_dom_waktu = np.fft.ifft(simbol_dom_frek)
+    return simbol_dom_waktu
+
+# Blok penambahan cyclic prefix
+
+
+def penambahan_cp(simbol_dom_waktu, panjang_cp):
+    # take the last CP samples ...
+    cyclic_prefix = simbol_dom_waktu[-panjang_cp:]
+    # ... and add them to the beginning
+    simbol_terkirim = np.hstack([cyclic_prefix, simbol_dom_waktu])
+    return simbol_terkirim
+
 
 """ Modul Channel """
-#OFDM Channel
-def channel(n_subcarriers, signal, snr_db):
-    channelResponse = np.array([1, 0, 0.3+0.3j])
-    H_exact = np.fft.fft(channelResponse, n_subcarriers)
-    convolved = np.convolve(signal, channelResponse)
-    signal_power = np.mean(abs(convolved**2))
-    sigma2 = signal_power * 10**(-snr_db/10)  # calculate noise power based on signal power and SNR
-    
-    #print ("RX Signal power: %.4f. Noise power: %.4f" % (signal_power, sigma2))
-    
-    # Generate complex noise with given variance
-    noise = np.sqrt(sigma2/2) * (np.random.randn(*convolved.shape)+1j*np.random.randn(*convolved.shape))
-    return H_exact, convolved + noise
+# Kanal multipoth model two-tap delayed line
+
+
+def kanal(n_subpembawa, simbol_terkirim, snr_db):
+    respon_impuls = np.array([1, 0, 0.3+0.3j])
+    respon_kanal = np.fft.fft(respon_impuls, n_subpembawa)
+    terkonvolusi = np.convolve(simbol_terkirim, respon_impuls)
+    daya_isyarat = np.mean(abs(terkonvolusi**2))
+    daya_derau = daya_isyarat * 10**(-snr_db/10)
+    derau_putih = np.sqrt(daya_derau/2) * (np.random.randn(*terkonvolusi.shape) +
+                                           1j*np.random.randn(*terkonvolusi.shape))
+    return respon_kanal, terkonvolusi + derau_putih
+
 
 """ Modul Receiver """
-#Remove CP
-def removeCP(signal,cycle_prefix, n_subcarriers):
-    return signal[cycle_prefix:(cycle_prefix+n_subcarriers)]
+# Blok penghapusan cyclic prefix
 
-#Transform to frequency domain
-def DFT(OFDM_RX):
-    return np.fft.fft(OFDM_RX)
 
-def equalize(OFDM_demod, Hest):
-    return OFDM_demod / Hest
+def penghapusan_cp(isyarat_terima, cyclic_prefix, pembawa):
+    return isyarat_terima[cyclic_prefix:(cyclic_prefix+pembawa)]
 
-def get_payload(equalized, dataCarriers):
-    return equalized[dataCarriers]
-#Channel Estimation
-def channelEstimate(OFDM_demod, pilotCarriers, pilotValue, allCarriers):
-    pilots = OFDM_demod[pilotCarriers]  # extract the pilot values from the RX signal
-    Hest_at_pilots = pilots / pilotValue # divide by the transmitted pilot values
-    
-    # Perform interpolation between the pilot carriers to get an estimate
-    # of the channel in the data carriers. Here, we interpolate absolute value and phase 
-    # separately
-    Hest_abs = scipy.interpolate.interp1d(pilotCarriers, abs(Hest_at_pilots), kind='linear', fill_value="extrapolate" )(allCarriers)
-    Hest_phase = scipy.interpolate.interp1d(pilotCarriers, np.angle(Hest_at_pilots), kind='linear', fill_value="extrapolate")(allCarriers)
-    Hest = Hest_abs * np.exp(1j*Hest_phase)
-    return Hest_at_pilots, Hest
-def Demapping(received_const, const_demapp):
-    # array of possible constellation points
-    constellation = np.array([x for x in const_demapp.keys()])
-    
-    # calculate distance of each RX point to each possible point
-    dists = abs(received_const.reshape((-1,1)) - constellation.reshape((1,-1)))
-    
-    # for each element in QAM, choose the index in constellation 
-    # that belongs to the nearest constellation point
-    const_index = dists.argmin(axis=1)
-    
-    # get back the real constellation point
-    hardDecision = constellation[const_index]
-    
-    # transform the constellation point into the bit groups
-    return np.vstack([const_demapp[C] for C in hardDecision]), hardDecision
+# Transform to frequency domain
 
-def PS(bits):
-    return bits.reshape((-1,))
 
-"""
-#Input Modulasi OFDMT
-def ofdm_transceiver(n_subcarriers, n_pilot, pilot_value, bits_per_symbol, cycle_prefix, snr_db):
-    allCarriers,pilotCarriers, dataCarriers, payloadBits_per_OFDM = subcarrier_config(n_subcarriers, n_pilot, bits_per_symbol)
-    bits = bit_generator(payloadBits_per_OFDM)
-    bits_paralel = serial_to_paralel(bits, dataCarriers, bits_per_symbol)
-    const_mapp, const_demapp  = Mapping(bits_paralel, bits_per_symbol)
-    ofdm_data = OFDM_symbol(n_subcarriers, const_mapp, pilotCarriers, pilot_value, dataCarriers)
-    ofdm_time = IDFT(ofdm_data)
-    ofdm_tx = addCP(ofdm_time, cycle_prefix)
-    H_exact, ofdm_rx = channel(n_subcarriers, ofdm_tx, snr_db)
-    ofdm_rx_cpremove = removeCP(ofdm_rx, cycle_prefix, n_subcarriers)
-    ofdm_freq = DFT(ofdm_rx_cpremove)
-    hest_at_pilots, hest = channelEstimate(ofdm_freq, pilotCarriers, pilot_value, allCarriers)
-    equalized_hest = equalize(ofdm_freq, hest)
-    receiced_const = get_payload(equalized_hest, dataCarriers)
-    bits_received, hard_decision = Demapping(receiced_const, const_demapp)
-    bits_serial = PS(bits_received)
-    show = p.get_plot_ofdm(bits, pilotCarriers, dataCarriers, allCarriers, n_subcarriers, const_mapp, H_exact, ofdm_time, 
-                           ofdm_tx, ofdm_rx, hest_at_pilots, hest, receiced_const, bits_received, hard_decision, bits_serial )
-    #plt.step(np.arange(0, len(bits)), bits)
-    return show
+def dft(simbol_terima):
+    simbol_dom_frek = np.fft.fft(simbol_terima)
+    return simbol_dom_frek
 
-"""
+# Blok estimasi kanal
+
+
+def estimasi_kanal(simbol_dom_frek, subpembawa_pilot, nilai_pilot, pembawa):
+    pilot_terima = simbol_dom_frek[subpembawa_pilot]
+    estimasi_pada_pilot = pilot_terima / nilai_pilot
+    estimasi_mutlak = scipy.interpolate.interp1d(subpembawa_pilot, abs(
+        estimasi_pada_pilot), kind='linear', fill_value="extrapolate")(pembawa)
+    estimasi_fase = scipy.interpolate.interp1d(subpembawa_pilot, np.angle(
+        estimasi_pada_pilot), kind='linear', fill_value="extrapolate")(pembawa)
+    kanal_terestimasi = estimasi_mutlak * np.exp(1j*estimasi_fase)
+    return estimasi_pada_pilot, kanal_terestimasi
+
+# Blok Ekualiser
+
+
+def ekualiser(simbol_dom_frek, kanal_terestimasi):
+    simbol_terekualisasi = simbol_dom_frek / kanal_terestimasi
+    return simbol_terekualisasi
+
+# Blok Penghapusan pilot
+
+
+def hapus_pilot(simbol_terekualisasi, subpembawa_data):
+    konstelasi_terima = simbol_terekualisasi[subpembawa_data]
+    return konstelasi_terima
+
+# Blok Pengawapeta
+
+
+def pengawapeta(konstelasi_terima, tabel_pengawapeta):
+    konstelasi = np.array([x for x in tabel_pengawapeta.keys()])
+    dists = abs(konstelasi_terima.reshape((-1, 1)) -
+                konstelasi.reshape((1, -1)))
+    indeks_konstelasi = dists.argmin(axis=1)
+    penentu_keras = konstelasi[indeks_konstelasi]
+    bit_paralel_terima = np.vstack(
+        [tabel_pengawapeta[T] for T in penentu_keras])
+    return bit_paralel_terima, penentu_keras
+
+# Blok paralel ke serial
+
+
+def paralel_ke_serial(bit_paralel_terima):
+    bit_serial_terima = bit_paralel_terima.reshape((-1,))
+    return bit_serial_terima
